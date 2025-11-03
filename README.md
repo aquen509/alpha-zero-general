@@ -15,10 +15,10 @@ Choose your game in ```main.py```.
 This project now uses the [uv package manager](https://github.com/astral-sh/uv) for dependency management and targets Python 3.14.
 
 After installing `uv`, create and populate a virtual environment with:
+```bash
+python setup_env.py
 ```
-./setup_env.sh
-```
-The script accepts optional arguments for the Python version and virtual environment path if you need to customise them.
+The script accepts optional positional arguments for the Python version and virtual environment path if you need to customise them (for example: `python setup_env.py 3.14 .venv`).
 
 ### Experiments
 We trained a PyTorch model for 6x6 Othello (~80 iterations, 100 episodes per iteration and 25 MCTS simulations per turn). This took about 3 days on an NVIDIA Tesla K80. The pretrained model (PyTorch) can be found in ```pretrained_models/othello/pytorch/```. You can play a game against it using ```pit.py```. Below is the performance of the model against a random and a greedy baseline with the number of iterations.
