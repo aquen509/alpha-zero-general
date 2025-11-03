@@ -8,7 +8,7 @@ sys.path.append("..")
 from MCTS import MCTS
 
 from dotsandboxes.DotsAndBoxesGame import DotsAndBoxesGame
-from dotsandboxes.keras.NNet import NNetWrapper
+from dotsandboxes.pytorch.NNet import NNetWrapper
 from dotsandboxes.DotsAndBoxesPlayers import GreedyRandomPlayer
 from utils import dotdict
 
@@ -40,5 +40,10 @@ if __name__ == '__main__':
     g = DotsAndBoxesGame(n=3)
     n1 = NNetWrapper(g)
     mcts = MCTS(g, n1, dotdict({'numMCTSSims': 50, 'cpuct': 1.0}))
-    n1.load_checkpoint(os.path.join('..', 'pretrained_models', 'dotsandboxes', 'keras', '3x3'), 'best.pth.tar')
+    pretrained_dir = os.path.join('..', 'pretrained_models', 'dotsandboxes', 'pytorch', '3x3')
+    pretrained_file = os.path.join(pretrained_dir, 'best.pth.tar')
+    if os.path.exists(pretrained_file):
+        n1.load_checkpoint(pretrained_dir, 'best.pth.tar')
+    else:
+        print('No PyTorch checkpoint found at {}. Using randomly initialised network.'.format(pretrained_file))
     app.run(debug=False, host='0.0.0.0', port=8888)

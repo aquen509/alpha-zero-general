@@ -6,7 +6,7 @@ sys.path.append('..')
 from Coach import Coach
 # from rts.configurations.ConfigWrapper import LearnArgs
 from rts.RTSGame import RTSGame as Game
-from rts.keras.NNet import NNetWrapper as nn
+from rts.pytorch.NNet import NNetWrapper as nn
 
 # from rts.src.config import grid_size
 

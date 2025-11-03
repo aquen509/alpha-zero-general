@@ -1,22 +1,9 @@
-""""
+"""Regression tests for verifying PyTorch integrations across the bundled games.
 
-    This is a Regression Test Suite to automatically test all combinations of games and ML frameworks. Each test
-    plays two quick games using an untrained neural network (randomly initialized) against a random player.
-
-    In order for the entire test suite to run successfully, all the required libraries must be installed.  They are:
-    Pytorch, Keras.
-
-     [ Games ]      Pytorch      Keras
-      -----------   -------      -----
-    - Othello        [Yes]       [Yes]
-    - TicTacToe                  [Yes]
-    - TicTacToe3D                [Yes]
-    - Connect4                   [Yes]
-    - Gobang                     [Yes]
-    - Tafl           [Yes]       [Yes]
-    - Rts                        [Yes]
-    - DotsAndBoxes               [Yes]
+Each test plays two quick games using a randomly initialised neural network against a
+random player. Ensure the PyTorch dependencies are installed before running the suite.
 """
+
 
 import unittest
 
@@ -26,29 +13,27 @@ from MCTS import MCTS
 from othello.OthelloGame import OthelloGame
 from othello.OthelloPlayers import RandomPlayer
 from othello.pytorch.NNet import NNetWrapper as OthelloPytorchNNet
-from othello.keras.NNet import NNetWrapper as OthelloKerasNNet
 
 from tictactoe.TicTacToeGame import TicTacToeGame
-from tictactoe.keras.NNet import NNetWrapper as TicTacToeKerasNNet
+from tictactoe.pytorch.NNet import NNetWrapper as TicTacToePytorchNNet
 
 from tictactoe_3d.TicTacToeGame import TicTacToeGame as TicTacToe3DGame
-from tictactoe_3d.keras.NNet import NNetWrapper as TicTacToe3DKerasNNet
+from tictactoe_3d.pytorch.NNet import NNetWrapper as TicTacToe3DPytorchNNet
 
 from connect4.Connect4Game import Connect4Game
-from connect4.keras.NNet import NNetWrapper as Connect4KerasNNet
+from connect4.pytorch.NNet import NNetWrapper as Connect4PytorchNNet
 
 from gobang.GobangGame import GobangGame
-from gobang.keras.NNet import NNetWrapper as GobangKerasNNet
+from gobang.pytorch.NNet import NNetWrapper as GobangPytorchNNet
 
 from tafl.TaflGame import TaflGame
 from tafl.pytorch.NNet import NNetWrapper as TaflPytorchNNet
-from tafl.keras.NNet import NNetWrapper as TaflKerasNNet
 
 from rts.RTSGame import RTSGame
-from rts.keras.NNet import NNetWrapper as RTSKerasNNet
+from rts.pytorch.NNet import NNetWrapper as RTSPytorchNNet
 
 from dotsandboxes.DotsAndBoxesGame import DotsAndBoxesGame
-from dotsandboxes.keras.NNet import NNetWrapper as DotsAndBoxesKerasNNet
+from dotsandboxes.pytorch.NNet import NNetWrapper as DotsAndBoxesPytorchNNet
 
 import numpy as np
 from utils import *
@@ -69,32 +54,26 @@ class TestAllGames(unittest.TestCase):
     def test_othello_pytorch(self):
         self.execute_game_test(OthelloGame(6), OthelloPytorchNNet)
 
-    def test_othello_keras(self):
-        self.execute_game_test(OthelloGame(6), OthelloKerasNNet)
+    def test_tictactoe_pytorch(self):
+        self.execute_game_test(TicTacToeGame(), TicTacToePytorchNNet)
 
-    def test_tictactoe_keras(self):
-        self.execute_game_test(TicTacToeGame(), TicTacToeKerasNNet)
-    
-    def test_tictactoe3d_keras(self):
-        self.execute_game_test(TicTacToe3DGame(3), TicTacToe3DKerasNNet)
-  
-    def test_gobang_keras(self):
-        self.execute_game_test(GobangGame(), GobangKerasNNet)
+    def test_tictactoe3d_pytorch(self):
+        self.execute_game_test(TicTacToe3DGame(3), TicTacToe3DPytorchNNet)
+
+    def test_gobang_pytorch(self):
+        self.execute_game_test(GobangGame(), GobangPytorchNNet)
 
     def test_tafl_pytorch(self):
         self.execute_game_test(TaflGame(5), TaflPytorchNNet)
 
-    def test_tafl_keras(self):
-        self.execute_game_test(TaflGame(5), TaflKerasNNet)
-  
-    def test_connect4_keras(self):
-        self.execute_game_test(Connect4Game(5), Connect4KerasNNet)
+    def test_connect4_pytorch(self):
+        self.execute_game_test(Connect4Game(5), Connect4PytorchNNet)
 
-    def test_rts_keras(self):
-        self.execute_game_test(RTSGame(), RTSKerasNNet)
+    def test_rts_pytorch(self):
+        self.execute_game_test(RTSGame(), RTSPytorchNNet)
 
-    def test_dotsandboxes_keras(self):
-        self.execute_game_test(DotsAndBoxesGame(3), DotsAndBoxesKerasNNet)
+    def test_dotsandboxes_pytorch(self):
+        self.execute_game_test(DotsAndBoxesGame(3), DotsAndBoxesPytorchNNet)
 
 if __name__ == '__main__':
     unittest.main()

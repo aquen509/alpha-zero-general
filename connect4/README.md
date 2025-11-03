@@ -7,7 +7,7 @@ To train a model for Connect4, update the imports in ```main.py``` to:
 ```python
 from Coach import Coach
 from connect4.Connect4Game import Connect4Game
-from connect4.tensorflow.NNet import NNetWrapper as nn
+from connect4.pytorch.NNet import NNetWrapper as nn
 from utils import dotdict
 ```
 
@@ -30,15 +30,15 @@ You can play againt the model by switching to HumanPlayer in ```pit.py```
 
 ### Experiments
 
-Experiments so far have been CPU constrained. I trained a tensorflow model for 6x7 Connect4 board (100 episodes,
+Experiments so far have been CPU constrained. I trained a PyTorch model for 6x7 Connect4 board (100 episodes,
 10 epochs per iteration and 25 MCTS simulations per turn) for 6 iterations which took about ~5 hours on an old
 i7-2670QM laptop without CUDA.  Running a further 6 iterations (20 hours?) has not yielded a noticable improvment.
 
 After 6 iterations, the model is wins 50% of the time vs the 'OneStepLookaheadConnect4Player' player.
 
 
-### Experiments 2 
-I trained a tensorflow model for 6x7 Connect4 board (100 episodes,
+### Experiments 2
+I trained a PyTorch model for 6x7 Connect4 board (100 episodes,
 10 epochs per iteration and 25 MCTS simulations per turn) for 32 iterations which took about ~5 hours on a i7-6700HQ laptop
 
 After 32 iterations, the model get a pretty good result (83 win,7 lose,10 draw)  vs the 'OneStepLookaheadConnect4Player' player.

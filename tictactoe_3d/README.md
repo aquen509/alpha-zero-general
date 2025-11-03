@@ -6,7 +6,7 @@ To train a model for TicTacToe, change the imports in ```main.py``` to:
 ```python
 from Coach import Coach
 from tictactoe_3d.TicTacToeGame import TicTacToeGame as Game
-from tictactoe_3d.keras.NNet import NNetWrapper as nn
+from tictactoe_3d.pytorch.NNet import NNetWrapper as nn
 from utils import *
 ```
 

@@ -3,7 +3,6 @@ import gc
 import os
 
 import numpy as np
-import tensorflow as tf
 # noinspection PyUnresolvedReferences
 import unreal_engine as ue
 # noinspection PyUnresolvedReferences
@@ -11,7 +10,7 @@ from TFPluginAPI import TFPluginAPI
 
 from MCTS import MCTS
 from rts.RTSGame import RTSGame
-from rts.keras.NNet import NNetWrapper as NNet
+from rts.pytorch.NNet import NNetWrapper as NNet
 from rts.src.config import ACTS_REV, NUM_ACTS
 from rts.src.encoders import OneHotEncoder
 from utils import dotdict
@@ -19,10 +18,8 @@ from utils import dotdict
 """
 rts_ue4.py
 
-This classes intended use is connecting to ue4 TensorFlow plugin as client and execute predict on given board.
-Connect to UE4 using https://github.com/getnamo/tensorflow-ue4
-See this release https://github.com/getnamo/tensorflow-ue4/releases/tag/0.8.0
-More info in readme.md
+This class connects to the UE4 integration and drives predictions using the PyTorch
+implementation of the RTS network. TensorFlow is no longer required.
 """
 
 
@@ -33,38 +30,20 @@ class TD2020LearnAPI(TFPluginAPI):
         self.initial_board_config = None
         self.setup = False
         self.g = None
-        self.graph_var = None
-        self.session_var = None
         self.mcts = None
 
     def onSetup(self):
-        """
-        Sets up nnet configs and mcts. It loads model in ram. Session variable is saved, so it can be then used async in 'onJsonInput'
-        """
-        graph = tf.Graph()
-        with graph.as_default():
-            session = tf.Session()
-            with session.as_default():
-                current_directory = os.path.join(os.path.dirname(__file__), 'temp/')
-                self.g = RTSGame()
-                n1 = NNet(self.g, OneHotEncoder())
-                n1.load_checkpoint(current_directory, 'best.pth.tar')
-                args = dotdict({'numMCTSSims': 2, 'cpuct': 1.0})
-                self.mcts = MCTS(self.g, n1, args)
-
-                self.graph_var = graph
-                self.session_var = session
-
-                self.setup = True
+        """Initialise the neural network and Monte Carlo tree search helpers."""
+        current_directory = os.path.join(os.path.dirname(__file__), 'temp/')
+        self.g = RTSGame()
+        n1 = NNet(self.g, OneHotEncoder())
+        n1.load_checkpoint(current_directory, 'best.pth.tar')
+        args = dotdict({'numMCTSSims': 2, 'cpuct': 1.0})
+        self.mcts = MCTS(self.g, n1, args)
+        self.setup = True
 
     def onJsonInput(self, jsonInput):
-        """
-        Request for action for specific game state of specific player.
-        Json input is recieved from UE4, providing game state in ue4. This game state must reflect same configuration as Python one.
-        Keep in mind coordinate system orientation
-        :param jsonInput: initial board config and player, requesting action
-        :return: recommended action using our nnet
-        """
+        """Return the recommended action for a UE4-provided board snapshot."""
         if not self.setup:
             return
         encoded_actors = jsonInput['data']
@@ -86,21 +65,20 @@ class TD2020LearnAPI(TFPluginAPI):
         self.initial_board_config = initial_board_config
         self.owning_player = jsonInput['player']
         ######
-        with self.graph_var.as_default():
-            with self.session_var.as_default():
-                self.g.setInitBoard(self.initial_board_config)
-                b = self.g.getInitBoard()
+        self.g.setInitBoard(self.initial_board_config)
+        b = self.g.getInitBoard()
 
-                def n1p(board): return np.argmax(self.mcts.getActionProb(board, temp=0))
+        def n1p(board):
+            return np.argmax(self.mcts.getActionProb(board, temp=0))
 
-                canonical_board = self.g.getCanonicalForm(b, self.owning_player)
+        canonical_board = self.g.getCanonicalForm(b, self.owning_player)
 
-                recommended_act = n1p(canonical_board)
-                y, x, action_index = np.unravel_index(recommended_act, [b.shape[0], b.shape[0], NUM_ACTS])
+        recommended_act = n1p(canonical_board)
+        y, x, action_index = np.unravel_index(recommended_act, [b.shape[0], b.shape[0], NUM_ACTS])
 
-                # gc.collect()
-                act = {"x": str(x), "y": str(y), "action": ACTS_REV[action_index]}
-                print("Printing recommended action >>>>>>>>>>>>>>>>>>>>>>>>" + str(act))
+        # gc.collect()
+        act = {"x": str(x), "y": str(y), "action": ACTS_REV[action_index]}
+        print("Printing recommended action >>>>>>>>>>>>>>>>>>>>>>>>" + str(act))
         return act
 
     def onBeginTraining(self):
@@ -116,14 +94,10 @@ class TD2020LearnAPI(TFPluginAPI):
         :param args: /
         """
         print("Closing Get Action")
-        if self.session_var:
-            self.session_var.close()
         self.owning_player = None
         self.initial_board_config = None
         self.setup = False
         self.g = None
-        self.graph_var = None
-        self.session_var = None
         self.mcts = None
 
 
