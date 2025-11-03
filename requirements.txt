@@ -2,6 +2,6 @@ coloredlogs==15.0.1
 flask
 humanfriendly==10.0
 numpy
-pygame
+pygame-ce
 torch==2.9.0
 tqdm==4.66.4

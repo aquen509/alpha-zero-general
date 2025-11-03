@@ -54,10 +54,17 @@ def venv_python_path(venv_path: Path) -> Path:
 
 
 def install_requirements(python_executable: Path) -> None:
-    subprocess.run(
-        ["uv", "pip", "install", "--python", str(python_executable), "-r", "requirements.txt"],
-        check=True,
-    )
+    command = ["uv", "pip", "install", "--python", str(python_executable), "-r", "requirements.txt"]
+    try:
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError as exc:  # pragma: no cover - passthrough for CLI feedback
+        print(
+            "Failed to install project dependencies. If the log mentions pygame, make sure any existing"
+            " 'pygame' installation is removed so that uv can fetch the Python 3.14 compatible 'pygame-ce'"
+            " wheels, then rerun this script.",
+            file=sys.stderr,
+        )
+        raise exc
 
 
 def activation_message(venv_path: Path) -> str:
