@@ -4,7 +4,7 @@ import coloredlogs
 
 from Coach import Coach
 from utils import dotdict
-from dotsandboxes.keras.NNet import NNetWrapper as nn
+from dotsandboxes.pytorch.NNet import NNetWrapper as nn
 
 from dotsandboxes.DotsAndBoxesGame import DotsAndBoxesGame
 

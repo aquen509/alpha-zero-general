@@ -5,7 +5,7 @@ from MCTS import MCTS
 from utils import dotdict
 from dotsandboxes.DotsAndBoxesGame import DotsAndBoxesGame
 from dotsandboxes.DotsAndBoxesPlayers import HumanDotsAndBoxesPlayer, RandomPlayer, GreedyRandomPlayer
-from dotsandboxes.keras.NNet import NNetWrapper
+from dotsandboxes.pytorch.NNet import NNetWrapper
 
 
 g = DotsAndBoxesGame(n=3)
@@ -21,13 +21,21 @@ grp2 = GreedyRandomPlayer(g).play
 
 numMCTSSims = 50
 n1 = NNetWrapper(g)
-n1.load_checkpoint(os.path.join('../', 'pretrained_models', 'dotsandboxes', 'keras', '3x3'), 'best.pth.tar')
+pretrained_dir = os.path.join('..', 'pretrained_models', 'dotsandboxes', 'pytorch', '3x3')
+pretrained_file = os.path.join(pretrained_dir, 'best.pth.tar')
+if os.path.exists(pretrained_file):
+    n1.load_checkpoint(pretrained_dir, 'best.pth.tar')
+else:
+    print('No PyTorch checkpoint found at {}. Using randomly initialised network.'.format(pretrained_file))
 args1 = dotdict({'numMCTSSims': numMCTSSims, 'cpuct': 1.0})
 mcts1 = MCTS(g, n1, args1)
 n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
 n2 = NNetWrapper(g)
-n2.load_checkpoint(os.path.join('../', 'pretrained_models', 'dotsandboxes', 'keras', '3x3'), 'best.pth.tar')
+if os.path.exists(pretrained_file):
+    n2.load_checkpoint(pretrained_dir, 'best.pth.tar')
+else:
+    print('No PyTorch checkpoint found at {}. Using randomly initialised network.'.format(pretrained_file))
 args2 = dotdict({'numMCTSSims': numMCTSSims, 'cpuct': 1.0})
 mcts2 = MCTS(g, n2, args2)
 n2p = lambda x: np.argmax(mcts2.getActionProb(x, temp=0))

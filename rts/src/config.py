@@ -12,19 +12,23 @@ from utils import dotdict
 # ###################### INITIAL CONFIGS AND OUTPUTS ##################################
 # ####################################################################################
 
-# specifically choose TF cpu if needed. This will have no effect if GPU is not present
-USE_TF_CPU = False
+# Force CPU execution if needed. This will have no effect if GPU is not present
+FORCE_CPU = False
 
 # helper path so model weights are imported and exported correctly when transferring project
 PATH = os.path.dirname(os.path.realpath(__file__))
 
-# Show initial TF configuration when TF is getting initialized
-SHOW_TENSORFLOW_GPU = True
+# Show initial GPU configuration when the deep learning backend is initialised
+SHOW_GPU_LOGS = True
+
+# Backwards compatibility aliases for legacy scripts
+USE_TF_CPU = FORCE_CPU
+SHOW_TENSORFLOW_GPU = SHOW_GPU_LOGS
 
 # Show initial Pygame welcome message when Pygame is getting initialized
 SHOW_PYGAME_WELCOME = False
 
-# If keras should output while fitting data
+# Control verbosity while fitting data
 VERBOSE_MODEL_FIT = 0
 
 # Maximum number of fps Pygame will render game at. Only relevant when running with verbose > 3
@@ -463,7 +467,7 @@ class Configuration:
                          player_config,
                          onehot_encoder,
                          player_model_file):
-                from rts.keras.NNet import NNetWrapper as NNet
+                from rts.pytorch.NNet import NNetWrapper as NNet
                 from MCTS import MCTS
 
                 if onehot_encoder:
@@ -729,7 +733,7 @@ class Configuration:
         :param dropout: Dropout in NNet Model config
         :param epochs: How many epochs should learning take
         :param batch_size: How big batches of learning examples there should be while learning
-        :param cuda: Whether to use cuda if tensorflow gpu is installed and GPU supports cuda operations
+        :param cuda: Whether to use CUDA when a supported PyTorch build is installed
         :param num_channels: Number of channels in NNet Model config
 
         :param initial_board_config: Configuration of initial non-empty tiles for actors. See its default values to override.

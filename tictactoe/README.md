@@ -6,7 +6,7 @@ To train a model for TicTacToe, change the imports in ```main.py``` to:
 ```python
 from Coach import Coach
 from tictactoe.TicTacToeGame import TicTacToeGame
-from tictactoe.keras.NNet import NNetWrapper as nn
+from tictactoe.pytorch.NNet import NNetWrapper as nn
 from utils import *
 ```
 
@@ -27,7 +27,7 @@ python pit.py
 You can play againt the model by switching to HumanPlayer in ```pit.py```
 
 ### Experiments
-I trained a Keras model for 3x3 TicTacToe (3 iterations, 25 episodes, 10 epochs per iteration and 25 MCTS simulations per turn). This took about 30 minutes on an i5-4570 without CUDA. The pretrained model (Keras) can be found in ```pretrained_models/tictactoe/keras/```. You can play a game against it using ```pit.py```. 
+I trained a PyTorch model for 3x3 TicTacToe (3 iterations, 25 episodes, 10 epochs per iteration and 25 MCTS simulations per turn). This took about 30 minutes on an i5-4570 without CUDA. Legacy Keras checkpoints remain in ```pretrained_models/tictactoe/keras/``` for reference.
 
 ### Contributors and Credits
 * [Evgeny Tyurin](https://github.com/evg-tyurin)

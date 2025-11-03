@@ -1,17 +1,18 @@
 #!/bin/bash
+set -euo pipefail
 
-DL_ENV=${1:-"pytorch"}
-NOTEBOOK_PORT=${2:-8888}
-VISDOM_PORT=${3:-8097}
-PYTORCH_IMAGE=pytorch:0.4.1-py3-gpu
+PYTHON_VERSION=${1:-"3.14"}
+VENV_PATH=${2:-".venv"}
 
-if [ ${DL_ENV}=="pytorch" ]; then
-    if [[ ! $(docker images -q ${PYTORCH_IMAGE}) ]]; then
-           docker build . -t ${PYTORCH_IMAGE} -f ./docker/Dockerfile.pytorch
-    fi
-    # this should run a pytorch notebook container
-    docker run --runtime=nvidia --shm-size 8G -v `pwd`:/workspace -p ${NOTEBOOK_PORT}:8888 -p ${VISDOM_PORT}:8097 --name pytorch_notebook ${PYTORCH_IMAGE}
-    docker exec pytorch_notebook jupyter notebook list
-else
+if ! command -v uv >/dev/null 2>&1; then
+    echo "The uv package manager is required. Please install it from https://github.com/astral-sh/uv."
     exit 1
 fi
+
+echo "Creating virtual environment with Python ${PYTHON_VERSION} at ${VENV_PATH}" 
+uv venv --python "${PYTHON_VERSION}" "${VENV_PATH}"
+
+source "${VENV_PATH}/bin/activate"
+uv pip install -r requirements.txt
+
+echo "Environment ready. Activate it with: source ${VENV_PATH}/bin/activate"

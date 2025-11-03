@@ -83,7 +83,7 @@ For learning results, see releases [Here](https://github.com/JernejHabjan/alpha-
 - Recommended Python 3.6 (3.7 is not supported by TensorFlow by the time of writing(December 2018))
 - Required TensorFlow (recommended 1.9)
 - Optional Pygame (board outputs can be displayed also in console if Pygame is not used)
-- Module can be connected via rts/visualization/rts_ue4.py to [UE4](https://github.com/JernejHabjan/TrumpDefense2020) using Tensorflow-ue4 v0.8.0 for UE4.19 https://github.com/getnamo/tensorflow-ue4/releases/tag/0.8.0
+- Module can be connected via rts/visualization/rts_ue4.py to [UE4](https://github.com/JernejHabjan/TrumpDefense2020). The integration now uses the PyTorch network directly and no longer requires the TensorFlow plugin.
 ## Files
 Main files to start learning and pitting:
 - rts/learn.py
@@ -101,7 +101,7 @@ run install script in
 > alpha-zero-general/rts/install.sh
 
 ## Tensorflow-Gpu installation (Optional):
-```pip install 'tensorflow-gpu==1.8'```
+```pip install torch torchvision```
 ### TensorFlow and CUDA
 Install cuda:
 - Install cuda files:

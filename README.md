@@ -1,25 +1,24 @@
 # Alpha Zero General (any game, any framework!)
-A simplified, highly flexible, commented and (hopefully) easy to understand implementation of self-play based reinforcement learning based on the AlphaGo Zero paper (Silver et al). It is designed to be easy to adopt for any two-player turn-based adversarial game and any deep learning framework of your choice. A sample implementation has been provided for the game of Othello in PyTorch and Keras. An accompanying tutorial can be found [here](https://suragnair.github.io/posts/alphazero.html). We also have implementations for many other games like GoBang and TicTacToe.
+A simplified, highly flexible, commented and (hopefully) easy to understand implementation of self-play based reinforcement learning based on the AlphaGo Zero paper (Silver et al). It is designed to be easy to adopt for any two-player turn-based adversarial game and any deep learning framework of your choice. The current repository provides PyTorch-based implementations for the supported games. An accompanying tutorial can be found [here](https://suragnair.github.io/posts/alphazero.html). We also have implementations for many other games like GoBang and TicTacToe.
 
-To use a game of your choice, subclass the classes in ```Game.py``` and ```NeuralNet.py``` and implement their functions. Example implementations for Othello can be found in ```othello/OthelloGame.py``` and ```othello/{pytorch,keras}/NNet.py```. 
+To use a game of your choice, subclass the classes in ```Game.py``` and ```NeuralNet.py``` and implement their functions. Example implementations for Othello can be found in ```othello/OthelloGame.py``` and ```othello/pytorch/NNet.py```.
 
-```Coach.py``` contains the core training loop and ```MCTS.py``` performs the Monte Carlo Tree Search. The parameters for the self-play can be specified in ```main.py```. Additional neural network parameters are in ```othello/{pytorch,keras}/NNet.py``` (cuda flag, batch size, epochs, learning rate etc.). 
+```Coach.py``` contains the core training loop and ```MCTS.py``` performs the Monte Carlo Tree Search. The parameters for the self-play can be specified in ```main.py```. Additional neural network parameters are in the respective ```pytorch/NNet.py``` files (cuda flag, batch size, epochs, learning rate etc.).
 
 To start training a model for Othello:
 ```bash
 python main.py
 ```
-Choose your framework and game in ```main.py```.
+Choose your game in ```main.py```.
 
-### Docker Installation
-For easy environment setup, we can use [nvidia-docker](https://github.com/NVIDIA/nvidia-docker). Once you have nvidia-docker set up, we can then simply run:
+### Environment setup
+This project now uses the [uv package manager](https://github.com/astral-sh/uv) for dependency management and targets Python 3.14.
+
+After installing `uv`, create and populate a virtual environment with:
 ```
 ./setup_env.sh
 ```
-to set up a (default: pyTorch) Jupyter docker container. We can now open a new terminal and enter:
-```
-docker exec -ti pytorch_notebook python main.py
-```
+The script accepts optional arguments for the Python version and virtual environment path if you need to customise them.
 
 ### Experiments
 We trained a PyTorch model for 6x6 Othello (~80 iterations, 100 episodes per iteration and 25 MCTS simulations per turn). This took about 3 days on an NVIDIA Tesla K80. The pretrained model (PyTorch) can be found in ```pretrained_models/othello/pytorch/```. You can play a game against it using ```pit.py```. Below is the performance of the model against a random and a greedy baseline with the number of iterations.
@@ -52,7 +51,7 @@ Some extensions have been implented [here](https://github.com/kevaday/alphazero-
 
 ### Contributors and Credits
 * [Shantanu Thakoor](https://github.com/ShantanuThakoor) and [Megha Jhunjhunwala](https://github.com/jjw-megha) helped with core design and implementation.
-* [Shantanu Kumar](https://github.com/SourKream) contributed TensorFlow and Keras models for Othello.
+* [Shantanu Kumar](https://github.com/SourKream) contributed the original TensorFlow and Keras models for Othello.
 * [Evgeny Tyurin](https://github.com/evg-tyurin) contributed rules and a trained model for TicTacToe.
 * [MBoss](https://github.com/1424667164) contributed rules and a model for GoBang.
 * [Jernej Habjan](https://github.com/JernejHabjan) contributed RTS game.
@@ -61,4 +60,4 @@ Some extensions have been implented [here](https://github.com/kevaday/alphazero-
 * [Robert Ronan](https://github.com/rlronan) contributed rules for Santorini.
 * [Plamen Totev](https://github.com/plamentotev) contributed Go Text Protocol player for Othello.
 
-Note: Chainer and TensorFlow v1 versions have been removed but can be found prior to commit [2ad461c](https://github.com/suragnair/alpha-zero-general/tree/2ad461c393ecf446e76f6694b613e394b8eb652f).
+Note: Legacy Chainer and TensorFlow implementations have been removed but can be found prior to commit [2ad461c](https://github.com/suragnair/alpha-zero-general/tree/2ad461c393ecf446e76f6694b613e394b8eb652f).
