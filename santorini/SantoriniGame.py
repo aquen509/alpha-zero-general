@@ -358,7 +358,7 @@ class SantoriniGame(Game):
 
 
     def stringRepresentation(self, board):
-        return board.tostring()
+        return np.array_str(board)
 
     def stringRepresentationReadable(self, board):
         # Do not think this works.

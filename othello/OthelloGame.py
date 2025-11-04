@@ -89,8 +89,8 @@ class OthelloGame(Game):
                 l += [(newB, list(newPi.ravel()) + [pi[-1]])]
         return l
 
-    def stringRepresentation(self, board):
-        return board.tostring()
+    def stringRepresentation(self, board: np.ndarray):
+        return np.array_str(board)
 
     def stringRepresentationReadable(self, board):
         board_s = "".join(self.square_content[square] for row in board for square in row)

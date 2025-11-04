@@ -31,12 +31,12 @@ def init_board_from_array(board, player):
 def test_simple_moves():
     board, player, game = init_board_from_moves([4, 5, 4, 3, 0, 6])
     expected = textwrap.dedent("""\
-        [[ 0.  0.  0.  0.  0.  0.  0.]
-         [ 0.  0.  0.  0.  0.  0.  0.]
-         [ 0.  0.  0.  0.  0.  0.  0.]
-         [ 0.  0.  0.  0.  0.  0.  0.]
-         [ 0.  0.  0.  0.  1.  0.  0.]
-         [ 1.  0.  0. -1.  1. -1. -1.]]""")
+        [[ 0  0  0  0  0  0  0]
+         [ 0  0  0  0  0  0  0]
+         [ 0  0  0  0  0  0  0]
+         [ 0  0  0  0  0  0  0]
+         [ 0  0  0  0  1  0  0]
+         [ 1  0  0 -1  1 -1 -1]]""")
     assert expected == game.stringRepresentation(board)
 
 
@@ -76,21 +76,21 @@ def test_symmetries():
     assert [0.1, 0.2, 0.3] == pi1 and [0.3, 0.2, 0.1] == pi2
 
     expected_board1 = textwrap.dedent("""\
-        [[ 0.  0.  0.  0.  0.  0.  0.]
-         [ 0.  0.  0.  0.  0.  0.  0.]
-         [ 0.  0.  0.  0.  0.  0.  0.]
-         [-1.  0.  0.  0.  0.  0.  0.]
-         [-1.  0.  0.  0.  0.  0.  0.]
-         [ 1.  1.  0.  0.  0.  0.  1.]]""")
+        [[ 0  0  0  0  0  0  0]
+         [ 0  0  0  0  0  0  0]
+         [ 0  0  0  0  0  0  0]
+         [-1  0  0  0  0  0  0]
+         [-1  0  0  0  0  0  0]
+         [ 1  1  0  0  0  0  1]]""")
     assert expected_board1 == game.stringRepresentation(board1)
 
     expected_board2 = textwrap.dedent("""\
-        [[ 0.  0.  0.  0.  0.  0.  0.]
-         [ 0.  0.  0.  0.  0.  0.  0.]
-         [ 0.  0.  0.  0.  0.  0.  0.]
-         [ 0.  0.  0.  0.  0.  0. -1.]
-         [ 0.  0.  0.  0.  0.  0. -1.]
-         [ 1.  0.  0.  0.  0.  1.  1.]]""")
+        [[ 0  0  0  0  0  0  0]
+         [ 0  0  0  0  0  0  0]
+         [ 0  0  0  0  0  0  0]
+         [ 0  0  0  0  0  0 -1]
+         [ 0  0  0  0  0  0 -1]
+         [ 1  0  0  0  0  1  1]]""")
     assert expected_board2 == game.stringRepresentation(board2)
 
 

@@ -98,7 +98,7 @@ class GobangGame(Game):
 
     def stringRepresentation(self, board):
         # 8x8 numpy array (canonical board)
-        return board.tostring()
+        return np.array_str(board)
 
     @staticmethod
     def display(board):
