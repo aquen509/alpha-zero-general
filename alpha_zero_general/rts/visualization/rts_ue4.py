@@ -1,0 +1,107 @@
+# noinspection PyUnresolvedReferences
+import gc
+import os
+
+import numpy as np
+# noinspection PyUnresolvedReferences
+import unreal_engine as ue
+# noinspection PyUnresolvedReferences
+from TFPluginAPI import TFPluginAPI
+
+from ...MCTS import MCTS
+from ...utils import dotdict
+from ..RTSGame import RTSGame
+from ..pytorch.NNet import NNetWrapper as NNet
+from ..src.config import ACTS_REV, NUM_ACTS
+from ..src.encoders import OneHotEncoder
+
+"""
+rts_ue4.py
+
+This class connects to the UE4 integration and drives predictions using the PyTorch
+implementation of the RTS network. TensorFlow is no longer required.
+"""
+
+
+# noinspection PyPep8Naming
+class TD2020LearnAPI(TFPluginAPI):
+    def __init__(self):
+        self.owning_player = None
+        self.initial_board_config = None
+        self.setup = False
+        self.g = None
+        self.mcts = None
+
+    def onSetup(self):
+        """Initialise the neural network and Monte Carlo tree search helpers."""
+        current_directory = os.path.join(os.path.dirname(__file__), 'temp/')
+        self.g = RTSGame()
+        n1 = NNet(self.g, OneHotEncoder())
+        n1.load_checkpoint(current_directory, 'best.pth.tar')
+        args = dotdict({'numMCTSSims': 2, 'cpuct': 1.0})
+        self.mcts = MCTS(self.g, n1, args)
+        self.setup = True
+
+    def onJsonInput(self, jsonInput):
+        """Return the recommended action for a UE4-provided board snapshot."""
+        if not self.setup:
+            return
+        encoded_actors = jsonInput['data']
+        initial_board_config = []
+        for encoded_actor in encoded_actors:
+            initial_board_config.append(
+                dotdict({
+                    'x': encoded_actor['x'],
+                    'y': encoded_actor['y'],
+                    'player': encoded_actor['player'],
+                    'a_type': encoded_actor['actorType'],
+                    'health': encoded_actor['health'],
+                    'carry': encoded_actor['carry'],
+                    'gold': encoded_actor['money'],
+                    'timeout': encoded_actor['remaining']
+                })
+            )
+
+        self.initial_board_config = initial_board_config
+        self.owning_player = jsonInput['player']
+        ######
+        self.g.setInitBoard(self.initial_board_config)
+        b = self.g.getInitBoard()
+
+        def n1p(board):
+            return np.argmax(self.mcts.getActionProb(board, temp=0))
+
+        canonical_board = self.g.getCanonicalForm(b, self.owning_player)
+
+        recommended_act = n1p(canonical_board)
+        y, x, action_index = np.unravel_index(recommended_act, [b.shape[0], b.shape[0], NUM_ACTS])
+
+        # gc.collect()
+        act = {"x": str(x), "y": str(y), "action": ACTS_REV[action_index]}
+        print("Printing recommended action >>>>>>>>>>>>>>>>>>>>>>>>" + str(act))
+        return act
+
+    def onBeginTraining(self):
+        pass
+
+    def run(self, args):
+        pass
+
+    # noinspection PyUnusedLocal
+    def close(self, args):
+        """
+        Just clear everything, so it's not memory leaking
+        :param args: /
+        """
+        print("Closing Get Action")
+        self.owning_player = None
+        self.initial_board_config = None
+        self.setup = False
+        self.g = None
+        self.mcts = None
+
+
+# required function to get our api
+# noinspection PyPep8Naming
+def getApi():
+    return TD2020LearnAPI.getInstance()
