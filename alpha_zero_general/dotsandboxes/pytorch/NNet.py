@@ -5,7 +5,7 @@ import numpy as np
 from tqdm.auto import tqdm
 
 from ...NeuralNet import NeuralNet
-from ...utils import AverageMeter, dotdict
+from ...utils import AverageMeter, dotdict, get_rng
 
 import torch
 import torch.optim as optim
@@ -23,6 +23,9 @@ args = dotdict({
     'num_residual_layers': 6,
     'value_hidden_size': 512,
 })
+
+
+rng = get_rng()
 
 
 def normalize_score(board_batch: np.ndarray) -> None:
@@ -70,7 +73,7 @@ class NNetWrapper(NeuralNet):
             batch_count = max(1, int(len(examples) / args.batch_size))
 
             for _ in tqdm(range(batch_count), desc='Training Net'):
-                sample_ids = np.random.randint(len(examples), size=args.batch_size)
+                sample_ids = rng.integers(len(examples), size=args.batch_size)
                 boards, target_pis, target_vs = list(zip(*[examples[i] for i in sample_ids]))
 
                 boards_tensor = self._prepare_boards(boards)

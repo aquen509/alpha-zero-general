@@ -7,7 +7,7 @@ import numpy as np
 import pygame
 from pygame.rect import Rect
 
-from ..utils import dotdict
+from ..utils import dotdict, get_rng
 from .src.config import (
     ACTS,
     ACTS_REV,
@@ -29,15 +29,18 @@ Human player has defined input controls for Pygame and console
 """
 
 
+rng = get_rng()
+
+
 class RandomPlayer:
     def __init__(self, game):
         self.game = game
 
     def play(self, board):
-        a = np.random.randint(self.game.getActionSize())
+        a = rng.integers(self.game.getActionSize())
         valids = self.game.getValidMoves(board, 1)
         while valids[a] != 1:
-            a = np.random.randint(self.game.getActionSize())
+            a = rng.integers(self.game.getActionSize())
         return a
 
 

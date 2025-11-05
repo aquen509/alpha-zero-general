@@ -6,12 +6,16 @@ from pickle import Pickler, Unpickler
 from random import shuffle
 
 import numpy as np
+
+from .utils import get_rng
 from tqdm import tqdm
 
 from .Arena import Arena
 from .MCTS import MCTS
 
 log = logging.getLogger(__name__)
+
+rng = get_rng()
 
 
 class Coach():
@@ -60,7 +64,7 @@ class Coach():
             for b, p in sym:
                 trainExamples.append([b, self.curPlayer, p, None])
 
-            action = np.random.choice(len(pi), p=pi)
+            action = rng.choice(len(pi), p=pi)
             board, self.curPlayer = self.game.getNextState(board, self.curPlayer, action)
 
             r = self.game.getGameEnded(board, self.curPlayer)

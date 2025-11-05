@@ -1,5 +1,10 @@
 import numpy as np
 
+from ..utils import get_rng
+
+
+rng = get_rng()
+
 """
 Random and Human-ineracting players for the game of TicTacToe.
 
@@ -14,10 +19,10 @@ class RandomPlayer():
         self.game = game
 
     def play(self, board):
-        a = np.random.randint(self.game.getActionSize())
+        a = rng.integers(self.game.getActionSize())
         valids = self.game.getValidMoves(board, 1)
         while valids[a]!=1:
-            a = np.random.randint(self.game.getActionSize())
+            a = rng.integers(self.game.getActionSize())
         return a
 
 

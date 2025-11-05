@@ -5,7 +5,7 @@ import numpy as np
 from tqdm.auto import tqdm
 
 from ...NeuralNet import NeuralNet
-from ...utils import AverageMeter, dotdict
+from ...utils import AverageMeter, dotdict, get_rng
 
 import torch
 import torch.optim as optim
@@ -61,8 +61,9 @@ class NNetWrapper(NeuralNet):
 
             batch_count = max(1, int(len(examples) / self.args.batch_size))
 
+            rng = get_rng()
             for _ in tqdm(range(batch_count), desc='Training Net', disable=not VERBOSE_MODEL_FIT):
-                sample_ids = np.random.randint(len(examples), size=self.args.batch_size)
+                sample_ids = rng.integers(len(examples), size=self.args.batch_size)
                 boards, target_pis, target_vs = list(zip(*[examples[i] for i in sample_ids]))
 
                 boards_tensor = self._prepare_boards(boards)

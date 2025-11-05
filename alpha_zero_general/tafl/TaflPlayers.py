@@ -1,15 +1,20 @@
-import numpy as np
 from .Digits import int2base
+
+from ..utils import get_rng
+
+
+rng = get_rng()
+
 
 class RandomTaflPlayer():
     def __init__(self, game):
         self.game = game
 
     def play(self, board):
-        a = np.random.randint(self.game.getActionSize())
+        a = rng.integers(self.game.getActionSize())
         valids = self.game.getValidMoves(board, board.getPlayerToMove())
         while valids[a]!=1:
-            a = np.random.randint(self.game.getActionSize())
+            a = rng.integers(self.game.getActionSize())
         return a
 
 

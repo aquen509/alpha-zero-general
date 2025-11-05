@@ -1,15 +1,20 @@
 import numpy as np
 
+from ..utils import get_rng
+
+
+rng = get_rng()
+
 
 class RandomPlayer:
     def __init__(self, game):
         self.game = game
 
     def play(self, board):
-        a = np.random.randint(self.game.getActionSize())
+        a = rng.integers(self.game.getActionSize())
         valids = self.game.getValidMoves(board, 1)
         while valids[a]!=1:
-            a = np.random.randint(self.game.getActionSize())
+            a = rng.integers(self.game.getActionSize())
         return a
 
 
@@ -26,9 +31,9 @@ class GreedyRandomPlayer:
             new_score = new_board[0, -1]
             if new_score > previous_score:
                 return action
-        a = np.random.randint(self.game.getActionSize())
+        a = rng.integers(self.game.getActionSize())
         while valids[a]!=1:
-            a = np.random.randint(self.game.getActionSize())
+            a = rng.integers(self.game.getActionSize())
         return a
 
 

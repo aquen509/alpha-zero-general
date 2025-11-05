@@ -3,9 +3,13 @@ import math
 
 import numpy as np
 
+from .utils import get_rng
+
 EPS = 1e-8
 
 log = logging.getLogger(__name__)
+
+rng = get_rng()
 
 
 class MCTS():
@@ -42,7 +46,7 @@ class MCTS():
 
         if temp == 0:
             bestAs = np.array(np.argwhere(counts == np.max(counts))).flatten()
-            bestA = np.random.choice(bestAs)
+            bestA = rng.choice(bestAs)
             probs = [0] * len(counts)
             probs[bestA] = 1
             return probs

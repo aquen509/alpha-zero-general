@@ -1,4 +1,7 @@
-import numpy as np
+from ..utils import get_rng
+
+
+rng = get_rng()
 
 
 class RandomPlayer():
@@ -6,10 +9,10 @@ class RandomPlayer():
         self.game = game
 
     def play(self, board):
-        a = np.random.randint(self.game.getActionSize())
+        a = rng.integers(self.game.getActionSize())
         valids = self.game.getValidMoves(board, 1)
         while valids[a] != 1:
-            a = np.random.randint(self.game.getActionSize())
+            a = rng.integers(self.game.getActionSize())
         return a
 
 
@@ -50,13 +53,13 @@ class OneStepLookaheadConnect4Player():
                 fallback_move_set.add(move)
 
         if len(win_move_set) > 0:
-            ret_move = np.random.choice(list(win_move_set))
+            ret_move = rng.choice(tuple(win_move_set))
             if self.verbose: print('Playing winning action %s from %s' % (ret_move, win_move_set))
         elif len(stop_loss_move_set) > 0:
-            ret_move = np.random.choice(list(stop_loss_move_set))
+            ret_move = rng.choice(tuple(stop_loss_move_set))
             if self.verbose: print('Playing loss stopping action %s from %s' % (ret_move, stop_loss_move_set))
         elif len(fallback_move_set) > 0:
-            ret_move = np.random.choice(list(fallback_move_set))
+            ret_move = rng.choice(tuple(fallback_move_set))
             if self.verbose: print('Playing random action %s from %s' % (ret_move, fallback_move_set))
         else:
             raise Exception('No valid moves remaining: %s' % game.stringRepresentation(board))

@@ -1,3 +1,6 @@
+from numpy.random import Generator, default_rng
+
+
 class AverageMeter(object):
     """From https://github.com/pytorch/examples/blob/master/imagenet/main.py"""
 
@@ -20,3 +23,15 @@ class AverageMeter(object):
 class dotdict(dict):
     def __getattr__(self, name):
         return self[name]
+
+
+_GLOBAL_RNG: Generator = default_rng()
+
+
+def get_rng() -> Generator:
+    """Return the shared numpy random number generator used across the project."""
+
+    return _GLOBAL_RNG
+
+
+__all__ = ['AverageMeter', 'dotdict', 'get_rng']

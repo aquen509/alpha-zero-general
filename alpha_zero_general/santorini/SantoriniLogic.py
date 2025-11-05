@@ -1,5 +1,10 @@
 import numpy as np
 
+from ..utils import get_rng
+
+
+rng = get_rng()
+
 class Board():
     """
     A Santorini Board of default shape: (2,5,5)
@@ -63,14 +68,14 @@ class Board():
             while chars_placed < 4:
                 char = char_list[chars_placed]
                 
-                a = np.random.randint(0, self.n)
-                b = np.random.randint(0, self.n)
+                a = rng.integers(0, self.n)
+                b = rng.integers(0, self.n)
                 if self.pieces[0][a][b] == 0:
                     self.pieces[0][a][b] = char
                     chars_placed += 1   
         elif (self.n % 2 == 0):
             offset = int(self.n/2)
-            if np.random.randint(0, 2) % 2 == 0:
+            if rng.integers(0, 2) % 2 == 0:
                 self.pieces[0][offset][offset]       = -1
                 self.pieces[0][offset -1][offset -1] = -2
                 self.pieces[0][offset][offset -1]    = +1
@@ -82,7 +87,7 @@ class Board():
                 self.pieces[0][offset -1][offset]    = -2
         else: # self.n is odd
             boardCenter = int((self.n -1)/2)
-            if np.random.randint(0, 2) % 2 == 0:
+            if rng.integers(0, 2) % 2 == 0:
                 self.pieces[0][boardCenter -1][boardCenter]    = -1
                 self.pieces[0][boardCenter +1][boardCenter]    = -2
                 self.pieces[0][boardCenter][boardCenter -1]    = +1

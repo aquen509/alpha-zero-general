@@ -4,6 +4,10 @@ import numpy as np
 
 from ..Game import Game
 from .SantoriniLogic import Board
+from ..utils import get_rng
+
+
+rng = get_rng()
 
 class SantoriniGame(Game):
     """
@@ -173,8 +177,8 @@ class SantoriniGame(Game):
         """
         b = Board(self.n)
         b.pieces = np.copy(board)
-        i = np.random.randint(0, 4)
-        k = np.random.choice([True, False])
+        i = rng.integers(0, 4)
+        k = rng.choice([True, False])
         newB0 = np.rot90(b.pieces[0], i)
         newB1 = np.rot90(b.pieces[1], i)
         if k:
