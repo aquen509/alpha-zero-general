@@ -104,7 +104,7 @@ class DotsAndBoxesGame(Game):
 
     def stringRepresentation(self, board):
         # 8x8 numpy array (canonical board)
-        return board.tostring()
+        return board.tobytes()
 
     @staticmethod
     def display(board):

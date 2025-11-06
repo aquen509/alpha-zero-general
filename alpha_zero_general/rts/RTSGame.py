@@ -188,7 +188,7 @@ class RTSGame:
         return return_list
 
     def stringRepresentation(self, board: np.ndarray):
-        return board.tostring()
+        return board.tobytes()
 
     def getScore(self, board: np.array, player: int):
         """
