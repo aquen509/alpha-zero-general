@@ -5,7 +5,7 @@ import numpy as np
 from tqdm.auto import tqdm
 
 from ...NeuralNet import NeuralNet
-from ...utils import AverageMeter, dotdict, get_rng
+from ...utils import AverageMeter, dotdict, get_device, get_rng, is_cuda_available
 
 import torch
 import torch.optim as optim
@@ -13,12 +13,16 @@ import torch.optim as optim
 from .DotsAndBoxesNNet import DotsAndBoxesNNet as onnet
 
 
+DEVICE = get_device()
+
+
 args = dotdict({
     'lr': 0.001,
     'dropout': 0.3,
     'epochs': 10,
     'batch_size': 64,
-    'cuda': torch.cuda.is_available(),
+    'cuda': is_cuda_available(),
+    'device': DEVICE,
     'num_channels': 256,
     'num_residual_layers': 6,
     'value_hidden_size': 512,
@@ -50,13 +54,12 @@ class NNetWrapper(NeuralNet):
         self.board_x, self.board_y = game.getBoardSize()
         self.action_size = game.getActionSize()
 
-        if args.cuda:
-            self.nnet.cuda()
+        self.nnet.to(args.device)
 
     def _prepare_boards(self, boards: Iterable[np.ndarray]) -> torch.Tensor:
         board_batch = np.array(boards, dtype=np.float32)
         normalize_score(board_batch)
-        tensor = torch.tensor(board_batch, dtype=torch.float32)
+        tensor = torch.tensor(board_batch, dtype=torch.float32, device=args.device)
         if tensor.dim() == 3:
             tensor = tensor.unsqueeze(1)
         return tensor
@@ -77,13 +80,8 @@ class NNetWrapper(NeuralNet):
                 boards, target_pis, target_vs = list(zip(*[examples[i] for i in sample_ids]))
 
                 boards_tensor = self._prepare_boards(boards)
-                target_pis = torch.tensor(np.array(target_pis), dtype=torch.float32)
-                target_vs = torch.tensor(np.array(target_vs), dtype=torch.float32)
-
-                if args.cuda:
-                    boards_tensor = boards_tensor.contiguous().cuda()
-                    target_pis = target_pis.contiguous().cuda()
-                    target_vs = target_vs.contiguous().cuda()
+                target_pis = torch.tensor(np.array(target_pis), dtype=torch.float32, device=args.device)
+                target_vs = torch.tensor(np.array(target_vs), dtype=torch.float32, device=args.device)
 
                 out_pi, out_v = self.nnet(boards_tensor)
                 l_pi = self.loss_pi(target_pis, out_pi)
@@ -101,9 +99,7 @@ class NNetWrapper(NeuralNet):
         board = np.copy(board).astype(np.float32)
         board = board[np.newaxis, :, :]
         normalize_score(board)
-        tensor = torch.tensor(board, dtype=torch.float32)
-        if args.cuda:
-            tensor = tensor.contiguous().cuda()
+        tensor = torch.tensor(board, dtype=torch.float32, device=args.device)
         tensor = tensor.view(1, 1, self.board_x, self.board_y)
         self.nnet.eval()
         with torch.no_grad():
@@ -131,6 +127,5 @@ class NNetWrapper(NeuralNet):
         filepath = os.path.join(folder, filename)
         if not os.path.exists(filepath):
             raise FileNotFoundError(f"No model in path {filepath}")
-        map_location = None if args.cuda else 'cpu'
-        checkpoint = torch.load(filepath, map_location=map_location)
+        checkpoint = torch.load(filepath, map_location=args.device)
         self.nnet.load_state_dict(checkpoint['state_dict'])

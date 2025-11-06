@@ -5,7 +5,7 @@ import numpy as np
 from tqdm.auto import tqdm
 
 from ...NeuralNet import NeuralNet
-from ...utils import AverageMeter, dotdict, get_rng
+from ...utils import AverageMeter, dotdict, get_device, get_rng, is_cuda_available
 
 import torch
 import torch.optim as optim
@@ -21,13 +21,16 @@ class NNetWrapper(NeuralNet):
         encoder = encoder or CONFIG.nnet_args.encoder
         self.encoder = encoder
 
-        cuda_available = torch.cuda.is_available()
+        default_device = get_device()
+        cuda_available = is_cuda_available()
+        device = default_device if (cuda_available and CONFIG.nnet_args.cuda) else torch.device('cpu')
         self.args = dotdict({
             'lr': CONFIG.nnet_args.lr,
             'dropout': CONFIG.nnet_args.dropout,
             'epochs': CONFIG.nnet_args.epochs,
             'batch_size': CONFIG.nnet_args.batch_size,
-            'cuda': cuda_available and CONFIG.nnet_args.cuda,
+            'cuda': device.type == 'cuda',
+            'device': device,
             'num_channels': CONFIG.nnet_args.num_channels,
             'num_residual_layers': getattr(CONFIG.nnet_args, 'num_residual_layers', 4),
             'value_hidden_size': getattr(CONFIG.nnet_args, 'value_hidden_size', 256),
@@ -40,12 +43,11 @@ class NNetWrapper(NeuralNet):
         self.board_x, self.board_y, _ = game.getBoardSize()
         self.action_size = game.getActionSize()
 
-        if self.args.cuda:
-            self.nnet.cuda()
+        self.nnet.to(self.args.device)
 
     def _prepare_boards(self, boards: Iterable[np.ndarray]) -> torch.Tensor:
         encoded = self.encoder.encode_multiple(np.array(boards))
-        tensor = torch.tensor(encoded, dtype=torch.float32)
+        tensor = torch.tensor(encoded, dtype=torch.float32, device=self.args.device)
         if tensor.dim() == 4:
             tensor = tensor.permute(0, 3, 1, 2)
         return tensor
@@ -67,13 +69,8 @@ class NNetWrapper(NeuralNet):
                 boards, target_pis, target_vs = list(zip(*[examples[i] for i in sample_ids]))
 
                 boards_tensor = self._prepare_boards(boards)
-                target_pis = torch.tensor(np.array(target_pis), dtype=torch.float32)
-                target_vs = torch.tensor(np.array(target_vs), dtype=torch.float32)
-
-                if self.args.cuda:
-                    boards_tensor = boards_tensor.contiguous().cuda()
-                    target_pis = target_pis.contiguous().cuda()
-                    target_vs = target_vs.contiguous().cuda()
+                target_pis = torch.tensor(np.array(target_pis), dtype=torch.float32, device=self.args.device)
+                target_vs = torch.tensor(np.array(target_vs), dtype=torch.float32, device=self.args.device)
 
                 out_pi, out_v = self.nnet(boards_tensor)
                 l_pi = self.loss_pi(target_pis, out_pi)
@@ -89,12 +86,10 @@ class NNetWrapper(NeuralNet):
 
     def predict(self, board: np.ndarray, player=None):
         encoded = self.encoder.encode(board)
-        tensor = torch.tensor(encoded, dtype=torch.float32)
+        tensor = torch.tensor(encoded, dtype=torch.float32, device=self.args.device)
         if tensor.dim() == 3:
             tensor = tensor.permute(2, 0, 1)
         tensor = tensor.unsqueeze(0)
-        if self.args.cuda:
-            tensor = tensor.contiguous().cuda()
         self.nnet.eval()
         with torch.no_grad():
             pi, v = self.nnet(tensor)
@@ -121,6 +116,5 @@ class NNetWrapper(NeuralNet):
         filepath = os.path.join(folder, filename)
         if not os.path.exists(filepath):
             raise FileNotFoundError(f"No model in path {filepath}")
-        map_location = None if self.args.cuda else 'cpu'
-        checkpoint = torch.load(filepath, map_location=map_location)
+        checkpoint = torch.load(filepath, map_location=self.args.device)
         self.nnet.load_state_dict(checkpoint['state_dict'])

@@ -5,19 +5,23 @@ import numpy as np
 from tqdm import tqdm
 
 from ...NeuralNet import NeuralNet
-from ...utils import AverageMeter, dotdict, get_rng
+from ...utils import AverageMeter, dotdict, get_device, get_rng, is_cuda_available
 
 import torch
 import torch.optim as optim
 
 from .TaflNNet import TaflNNet as onnet
 
+DEVICE = get_device()
+
+
 args = dotdict({
     'lr': 0.001,
     'dropout': 0.3,
     'epochs': 10,
     'batch_size': 64,
-    'cuda': torch.cuda.is_available(),
+    'cuda': is_cuda_available(),
+    'device': DEVICE,
     'num_channels': 512,
 })
 
@@ -31,8 +35,7 @@ class NNetWrapper(NeuralNet):
         self.board_x, self.board_y = game.getBoardSize()
         self.action_size = game.getActionSize()
 
-        if args.cuda:
-            self.nnet.cuda()
+        self.nnet.to(args.device)
 
     def train(self, examples):
         """
@@ -52,13 +55,9 @@ class NNetWrapper(NeuralNet):
             for _ in t:
                 sample_ids = rng.integers(len(examples), size=args.batch_size)
                 boards, pis, vs = list(zip(*[examples[i] for i in sample_ids]))
-                boards = torch.FloatTensor(np.array(boards).astype(np.float64))
-                target_pis = torch.FloatTensor(np.array(pis))
-                target_vs = torch.FloatTensor(np.array(vs).astype(np.float64))
-
-                # predict
-                if args.cuda:
-                    boards, target_pis, target_vs = boards.contiguous().cuda(), target_pis.contiguous().cuda(), target_vs.contiguous().cuda()
+                boards = torch.tensor(np.array(boards), dtype=torch.float32, device=args.device)
+                target_pis = torch.tensor(np.array(pis), dtype=torch.float32, device=args.device)
+                target_vs = torch.tensor(np.array(vs), dtype=torch.float32, device=args.device)
 
                 # compute output
                 out_pi, out_v = self.nnet(boards)
@@ -84,8 +83,7 @@ class NNetWrapper(NeuralNet):
         start = time.time()
 
         # preparing input
-        board = torch.FloatTensor(board.astype(np.float64))
-        if args.cuda: board = board.contiguous().cuda()
+        board = torch.tensor(board.astype(np.float32), device=args.device)
         board = board.view(1, self.board_x, self.board_y)
         self.nnet.eval()
         with torch.no_grad():
@@ -116,6 +114,5 @@ class NNetWrapper(NeuralNet):
         filepath = os.path.join(folder, filename)
         if not os.path.exists(filepath):
             raise ("No model in path {}".format(filepath))
-        map_location = None if args.cuda else 'cpu'
-        checkpoint = torch.load(filepath, map_location=map_location)
+        checkpoint = torch.load(filepath, map_location=args.device)
         self.nnet.load_state_dict(checkpoint['state_dict'])
