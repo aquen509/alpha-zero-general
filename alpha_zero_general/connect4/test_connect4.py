@@ -9,6 +9,14 @@ import numpy as np
 
 from .Connect4Game import Connect4Game
 
+
+def _string_representation_to_text(game, board):
+    rep = game.stringRepresentation(board)
+    if isinstance(rep, (bytes, bytearray)):
+        arr = np.frombuffer(rep, dtype=board.dtype).reshape(board.shape).astype(float)
+        return np.array2string(arr)
+    return rep
+
 # Tuple of (Board, Player, Game) to simplify testing.
 BPGTuple = namedtuple('BPGTuple', 'board player game')
 
@@ -37,7 +45,7 @@ def test_simple_moves():
          [ 0.  0.  0.  0.  0.  0.  0.]
          [ 0.  0.  0.  0.  1.  0.  0.]
          [ 1.  0.  0. -1.  1. -1. -1.]]""")
-    assert expected == game.stringRepresentation(board)
+    assert expected == _string_representation_to_text(game, board)
 
 
 def test_overfull_column():
@@ -82,7 +90,7 @@ def test_symmetries():
          [-1.  0.  0.  0.  0.  0.  0.]
          [-1.  0.  0.  0.  0.  0.  0.]
          [ 1.  1.  0.  0.  0.  0.  1.]]""")
-    assert expected_board1 == game.stringRepresentation(board1)
+    assert expected_board1 == _string_representation_to_text(game, board1)
 
     expected_board2 = textwrap.dedent("""\
         [[ 0.  0.  0.  0.  0.  0.  0.]
@@ -91,7 +99,7 @@ def test_symmetries():
          [ 0.  0.  0.  0.  0.  0. -1.]
          [ 0.  0.  0.  0.  0.  0. -1.]
          [ 1.  0.  0.  0.  0.  1.  1.]]""")
-    assert expected_board2 == game.stringRepresentation(board2)
+    assert expected_board2 == _string_representation_to_text(game, board2)
 
 
 def test_game_ended():

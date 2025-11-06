@@ -443,7 +443,7 @@ class Configuration:
                            player_config: dict,
                            onehot_encoder: bool,
                            player_model_file: str):
-            from rts.RTSPlayers import RandomPlayer, GreedyRTSPlayer, HumanRTSPlayer
+            from ..RTSPlayers import RandomPlayer, GreedyRTSPlayer, HumanRTSPlayer
 
             if player_type == 'nnet':
                 if player_config is None:
@@ -465,7 +465,7 @@ class Configuration:
                          player_config,
                          onehot_encoder,
                          player_model_file):
-                from rts.pytorch.NNet import NNetWrapper as NNet
+                from ..pytorch.NNet import NNetWrapper as NNet
                 from ...MCTS import MCTS
 
                 if onehot_encoder:

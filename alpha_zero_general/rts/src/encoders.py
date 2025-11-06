@@ -131,7 +131,7 @@ class OneHotEncoder(Encoder):
         :param board: normal board
         :return: new encoded board
         """
-        from rts.src.config import P_NAME_IDX, A_TYPE_IDX, HEALTH_IDX, CARRY_IDX, MONEY_IDX, TIME_IDX
+        from .config import P_NAME_IDX, A_TYPE_IDX, HEALTH_IDX, CARRY_IDX, MONEY_IDX, TIME_IDX
 
         n = board.shape[0]
 

@@ -134,8 +134,8 @@ class HumanRTSPlayer:
         :param board: game state
         :return: /
         """
-        from rts.src.Board import Board
-        from rts.src.config_class import CONFIG
+        from .src.Board import Board
+        from .src.config_class import CONFIG
 
         n = board.shape[0]
 

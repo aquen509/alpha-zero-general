@@ -220,7 +220,7 @@ def display(board):
     :param board: game state
     :return: /
     """
-    from rts.visualization.rts_pygame import init_visuals, update_graphics
+    from .visualization.rts_pygame import init_visuals, update_graphics
 
     if not CONFIG.visibility:
         return
