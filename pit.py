@@ -1,12 +1,13 @@
-import Arena
-from MCTS import MCTS
-from othello.OthelloGame import OthelloGame
-from othello.OthelloPlayers import *
-from othello.pytorch.NNet import NNetWrapper as NNet
+from alpha_zero_general import Arena
+from alpha_zero_general.MCTS import MCTS
+from alpha_zero_general.othello.OthelloGame import OthelloGame
+from alpha_zero_general.othello.OthelloPlayers import *
+from alpha_zero_general.othello.pytorch.NNet import NNetWrapper as NNet
 
 
 import numpy as np
-from utils import *
+
+from alpha_zero_general.utils import *
 
 """
 use this script to play any two agents against each other, or play manually with

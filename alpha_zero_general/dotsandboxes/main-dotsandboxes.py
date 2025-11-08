@@ -3,9 +3,10 @@ import logging
 import coloredlogs
 
 from alpha_zero_general.Coach import Coach
-from alpha_zero_general.othello.OthelloGame import OthelloGame as Game
-from alpha_zero_general.othello.pytorch.NNet import NNetWrapper as nn
-from alpha_zero_general.utils import *
+from alpha_zero_general.utils import dotdict
+
+from alpha_zero_general.dotsandboxes.DotsAndBoxesGame import DotsAndBoxesGame
+from alpha_zero_general.dotsandboxes.pytorch.NNet import NNetWrapper as nn
 
 log = logging.getLogger(__name__)
 
@@ -28,27 +29,21 @@ args = dotdict({
 
 })
 
+args['numIters'] = 100
+args['numEps'] = 25
+
 
 def main():
-    log.info('Loading %s...', Game.__name__)
-    g = Game(6)
-
+    log.info('Loading %s...', DotsAndBoxesGame.__name__)
+    g = DotsAndBoxesGame(n=3)
     log.info('Loading %s...', nn.__name__)
     nnet = nn(g)
-
     if args.load_model:
-        log.info('Loading checkpoint "%s/%s"...', args.load_folder_file[0], args.load_folder_file[1])
         nnet.load_checkpoint(args.load_folder_file[0], args.load_folder_file[1])
     else:
         log.warning('Not loading a checkpoint!')
-
     log.info('Loading the Coach...')
     c = Coach(g, nnet, args)
-
-    if args.load_model:
-        log.info("Loading 'trainExamples' from file...")
-        c.loadTrainExamples()
-
     log.info('Starting the learning process 🎉')
     c.learn()
 

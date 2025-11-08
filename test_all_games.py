@@ -7,36 +7,40 @@ random player. Ensure the PyTorch dependencies are installed before running the 
 
 import unittest
 
-import Arena
-from MCTS import MCTS
-
-from othello.OthelloGame import OthelloGame
-from othello.OthelloPlayers import RandomPlayer
-from othello.pytorch.NNet import NNetWrapper as OthelloPytorchNNet
-
-from tictactoe.TicTacToeGame import TicTacToeGame
-from tictactoe.pytorch.NNet import NNetWrapper as TicTacToePytorchNNet
-
-from tictactoe_3d.TicTacToeGame import TicTacToeGame as TicTacToe3DGame
-from tictactoe_3d.pytorch.NNet import NNetWrapper as TicTacToe3DPytorchNNet
-
-from connect4.Connect4Game import Connect4Game
-from connect4.pytorch.NNet import NNetWrapper as Connect4PytorchNNet
-
-from gobang.GobangGame import GobangGame
-from gobang.pytorch.NNet import NNetWrapper as GobangPytorchNNet
-
-from tafl.TaflGame import TaflGame
-from tafl.pytorch.NNet import NNetWrapper as TaflPytorchNNet
-
-from rts.RTSGame import RTSGame
-from rts.pytorch.NNet import NNetWrapper as RTSPytorchNNet
-
-from dotsandboxes.DotsAndBoxesGame import DotsAndBoxesGame
-from dotsandboxes.pytorch.NNet import NNetWrapper as DotsAndBoxesPytorchNNet
-
 import numpy as np
-from utils import *
+
+from alpha_zero_general import Arena
+from alpha_zero_general.MCTS import MCTS
+from alpha_zero_general.connect4.Connect4Game import Connect4Game
+from alpha_zero_general.connect4.pytorch.NNet import (
+    NNetWrapper as Connect4PytorchNNet,
+)
+from alpha_zero_general.dotsandboxes.DotsAndBoxesGame import DotsAndBoxesGame
+from alpha_zero_general.dotsandboxes.pytorch.NNet import (
+    NNetWrapper as DotsAndBoxesPytorchNNet,
+)
+from alpha_zero_general.gobang.GobangGame import GobangGame
+from alpha_zero_general.gobang.pytorch.NNet import NNetWrapper as GobangPytorchNNet
+from alpha_zero_general.othello.OthelloGame import OthelloGame
+from alpha_zero_general.othello.OthelloPlayers import RandomPlayer
+from alpha_zero_general.othello.pytorch.NNet import (
+    NNetWrapper as OthelloPytorchNNet,
+)
+from alpha_zero_general.rts.RTSGame import RTSGame
+from alpha_zero_general.rts.pytorch.NNet import NNetWrapper as RTSPytorchNNet
+from alpha_zero_general.tafl.TaflGame import TaflGame
+from alpha_zero_general.tafl.pytorch.NNet import NNetWrapper as TaflPytorchNNet
+from alpha_zero_general.tictactoe.TicTacToeGame import TicTacToeGame
+from alpha_zero_general.tictactoe.pytorch.NNet import (
+    NNetWrapper as TicTacToePytorchNNet,
+)
+from alpha_zero_general.tictactoe_3d.TicTacToeGame import (
+    TicTacToeGame as TicTacToe3DGame,
+)
+from alpha_zero_general.tictactoe_3d.pytorch.NNet import (
+    NNetWrapper as TicTacToe3DPytorchNNet,
+)
+from alpha_zero_general.utils import *
 
 class TestAllGames(unittest.TestCase):
 
