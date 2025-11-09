@@ -58,37 +58,53 @@ class QuoridorGame(Game):
         return [(board, pi)]
 
     def stringRepresentation(self, board):
-        return board.tobytes()
+        return self._render_state(board)
 
     @staticmethod
     def display(board):
+        print(QuoridorGame._render_state(board))
+
+    @staticmethod
+    def _render_state(board: np.ndarray) -> str:
         size = board.shape[1]
         p1 = tuple(np.argwhere(board[0] == 1)[0])
         p2 = tuple(np.argwhere(board[1] == 1)[0])
         horizontal = board[2]
         vertical = board[3]
 
+        lines: list[str] = []
         for row in range(size):
-            line = []
+            row_chars: list[str] = []
             for col in range(size):
                 if (row, col) == p1:
-                    line.append('A')
+                    row_chars.append("X")
                 elif (row, col) == p2:
-                    line.append('B')
+                    row_chars.append("O")
                 else:
-                    line.append('.')
+                    row_chars.append(".")
+
                 if col < size - 1:
                     has_wall = False
-                    if row < size - 1 and col < size - 1 and vertical[row, col]:
+                    if row < size - 1 and vertical[row, col]:
                         has_wall = True
-                    if row > 0 and col < size - 1 and vertical[row - 1, col]:
+                    if row > 0 and vertical[row - 1, col]:
                         has_wall = True
-                    line.append('|' if has_wall else ' ')
-            print(''.join(line))
+                    row_chars.append("|" if has_wall else " ")
+            lines.append("".join(row_chars))
+
             if row < size - 1:
-                divider = []
-                for col in range(size - 1):
-                    filled = row < size - 1 and col < size - 1 and horizontal[row, col]
-                    divider.append('-' if filled else ' ')
-                    divider.append('-' if filled else ' ')
-                print(''.join(divider))
+                divider: list[str] = []
+                for col in range(size):
+                    has_wall = False
+                    if col < size - 1 and horizontal[row, col]:
+                        has_wall = True
+                    if col > 0 and horizontal[row, col - 1]:
+                        has_wall = True
+                    divider.append("-" if has_wall else " ")
+
+                    if col < size - 1:
+                        divider.append("-" if horizontal[row, col] else " ")
+
+                lines.append("".join(divider).rstrip())
+
+        return "\n".join(lines)

@@ -107,3 +107,36 @@ def test_game_ended_respects_player_perspective():
     state = board.to_state()
     assert game.getGameEnded(state, 1) == -1
     assert game.getGameEnded(state, -1) == 1
+
+
+def test_string_representation_initial_board():
+    game = QuoridorGame(size=3, walls_per_player=5)
+    board = game.getInitBoard()
+
+    expected = ". X .\n\n. . .\n\n. O ."
+    assert game.stringRepresentation(board) == expected
+
+
+def test_string_representation_includes_walls():
+    board = QuoridorBoard(size=3, walls_per_player=5)
+    board.pawns = [(0, 0), (2, 2)]
+    board.horizontal_walls[0, 0] = 1
+    board.vertical_walls[0, 1] = 1
+
+    game = QuoridorGame(size=3, walls_per_player=5)
+    rendered = game.stringRepresentation(board.to_state())
+
+    expected = "X .|.\n---\n. .|.\n\n. . O"
+    assert rendered == expected
+
+
+def test_string_representation_vertical_wall_bottom_segment():
+    board = QuoridorBoard(size=3, walls_per_player=5)
+    board.pawns = [(0, 1), (2, 2)]
+    board.vertical_walls[1, 0] = 1
+
+    game = QuoridorGame(size=3, walls_per_player=5)
+    rendered = game.stringRepresentation(board.to_state())
+
+    expected = ". X .\n\n.|. .\n\n.|. O"
+    assert rendered == expected
